@@ -31,7 +31,10 @@ function LoginPage() {
       // 헤더에 보여줄 닉네임, 관리자 메뉴용 권한도 저장
       localStorage.setItem('nickname', res.data.nickname);
       localStorage.setItem('memberRole', res.data.memberRole);
-      // TODO: 서버에서 비회원 인생 → 회원 인생 전환(M02)을 만든 뒤에 guestToken 삭제
+      // 비회원 인생이 회원 인생으로 전환됐으면 임시 토큰은 이제 필요 없음
+      if (res.data.guestConverted) {
+        localStorage.removeItem('guestToken');
+      }
 
       navigate('/'); // 메인으로
     } catch (err) {
