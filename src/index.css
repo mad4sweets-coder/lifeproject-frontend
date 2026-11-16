@@ -1,0 +1,15 @@
+/* 모든 화면에 공통으로 적용 (main.jsx 에서 import) */
+* {
+  box-sizing: border-box;
+}
+
+body {
+  margin: 0;
+  background: #efefef;
+  font-family: 'Pretendard', 'Noto Sans KR', sans-serif;
+  color: #222;
+}
+
+a {
+  color: inherit;
+}
