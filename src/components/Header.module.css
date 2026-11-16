@@ -1,0 +1,72 @@
+.header {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  padding: 12px 50px;
+  background: #fff;
+  border-bottom: 1px solid #ccc;
+}
+
+.headerLeft {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+}
+
+.headerRight {
+  display: flex;
+  gap: 6px;
+}
+
+.logo {
+  border: 1px solid #222;
+  padding: 4px 10px;
+  font-weight: 700;
+  text-decoration: none;
+}
+
+.badge {
+  font-size: 11px;
+  color: #666;
+  background: #eee;
+  border: 1px solid #bbb;
+  border-radius: 4px;
+  padding: 2px 6px;
+}
+
+.navBtn {
+  padding: 8px 14px;
+  font-size: 13px;
+  background: #fff;
+  border: 1px solid #bbb;
+  border-radius: 6px;
+  text-decoration: none;
+}
+
+.navBtn:hover {
+  background: #f5f5f5;
+}
+
+/* 로그아웃은 <button> 이라 글꼴·커서를 링크와 맞춤 */
+button.navBtn {
+  font-family: inherit;
+  cursor: pointer;
+}
+
+.navBtnDark {
+  padding: 8px 14px;
+  font-size: 13px;
+  color: #fff;
+  background: #222;
+  border: 1px solid #222;
+  border-radius: 6px;
+  text-decoration: none;
+}
+
+.nickname {
+  display: flex;
+  align-items: center;
+  padding: 0 4px;
+  font-size: 13px;
+  font-weight: 700;
+}
