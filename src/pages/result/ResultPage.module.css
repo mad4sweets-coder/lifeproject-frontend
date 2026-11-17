@@ -45,3 +45,41 @@
 }
 .sources ol { margin: var(--sp-1) 0 var(--sp-2); padding-left: 1.4em; }
 .sources a { color: var(--ink-sub); }
+
+/* C20 인생 Q&A */
+.qna {
+  max-height: 480px;
+  overflow-y: auto;
+  margin-bottom: var(--sp-3);
+}
+.qaItem { margin-bottom: var(--sp-3); }
+.q {
+  margin-left: auto;
+  width: fit-content;
+  max-width: 85%;
+  background: var(--panel-2);
+  border: 1px solid var(--line);
+  border-radius: 12px 12px 2px 12px;
+  padding: var(--sp-2) var(--sp-3);
+  margin-bottom: var(--sp-2);
+}
+.a {
+  max-width: 92%;
+  line-height: 1.7;
+}
+.a p { margin: 0 0 var(--sp-2); }
+.a sup { font-size: 0.7em; margin-left: 1px; }
+.qaSources {
+  list-style: none;
+  padding: 0;
+  margin: 0;
+  font-size: var(--fs-xs);
+  color: var(--ink-sub);
+}
+.qaSources a { color: var(--ink-sub); }
+.qaForm {
+  display: flex;
+  gap: var(--sp-2);
+  margin-top: var(--sp-3);
+}
+.qaForm input { flex: 1; }
