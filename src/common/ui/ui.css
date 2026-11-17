@@ -491,3 +491,77 @@
 }
 .orbit-mark.on b { background: var(--primary); color: var(--on-primary); font-weight: 700; font-size: 13px; }
 .orbit-hint { position: absolute; left: 0; bottom: 0; margin: 0; font-size: var(--fs-xs); color: var(--ink-light); pointer-events: none; }
+
+/* =========================================================
+   인생 진행 화면 (C03·C09) 부품
+   ========================================================= */
+
+/* ---------- 효과 칩 (EffectChips) ---------- */
+.effects { display: inline-flex; flex-wrap: wrap; gap: 6px; margin-top: 6px; }
+.effect {
+  display: inline-flex;
+  align-items: center;
+  gap: 5px;
+  height: 22px;
+  padding: 0 8px;
+  border-radius: var(--radius-pill);
+  background: var(--panel-2);
+  font-size: 11px;
+  color: var(--ink-sub);
+  font-variant-numeric: tabular-nums;
+}
+.effect i { width: 6px; height: 6px; border-radius: 50%; background: var(--fx); }
+.effect.up { color: var(--ink); }
+.effect.down { color: var(--ink-light); }
+.effect.down i { background: transparent; border: 1.5px solid var(--fx); }
+
+/* ---------- 올해 일어난 일 (YearEvents) ---------- */
+.year { display: grid; grid-template-columns: 64px 1fr; gap: var(--sp-3); animation: rise-in 0.35s var(--ease); }
+.year-head { display: flex; flex-direction: column; align-items: flex-start; }
+.year-age { font-family: var(--font-display); font-size: var(--fs-xl); line-height: 1; color: var(--ink); }
+.year-age small { font-size: var(--fs-sm); color: var(--ink-sub); margin-left: 2px; }
+.year-year { font-size: var(--fs-xs); color: var(--ink-light); margin-top: 4px; }
+.year-quiet { margin: 4px 0 0; font-size: var(--fs-sm); color: var(--ink-light); }
+.year-list { list-style: none; margin: 0; padding: 0; display: flex; flex-direction: column; gap: var(--sp-3); }
+.year-item { display: grid; grid-template-columns: 14px 1fr; gap: var(--sp-2); }
+.year-dot { width: 8px; height: 8px; margin-top: 8px; border-radius: 50%; background: var(--primary); box-shadow: 0 0 8px var(--primary); }
+.year-text { margin: 0; font-size: var(--fs-md); line-height: 1.6; color: var(--ink); }
+
+/* ---------- 선택 이벤트 창 (EventChoiceModal) ---------- */
+.choice-q { margin: 0 0 var(--sp-4); font-family: var(--font-display); font-size: var(--fs-lg); line-height: 1.6; color: var(--ink); }
+.choice-opts { display: flex; flex-direction: column; gap: var(--sp-2); }
+.choice-opt {
+  display: flex;
+  align-items: center;
+  gap: var(--sp-3);
+  width: 100%;
+  min-height: 56px;
+  padding: var(--sp-2) var(--sp-3);
+  text-align: left;
+  border: 1px solid var(--line-strong);
+  border-radius: var(--radius);
+  background: transparent;
+  color: var(--ink);
+  font-family: var(--font-body);
+  font-size: var(--fs-md);
+  cursor: pointer;
+  transition: background 0.15s, border-color 0.15s;
+}
+.choice-opt:hover:not(:disabled) { background: var(--primary-light); border-color: var(--primary); }
+.choice-opt:disabled { opacity: 0.5; cursor: progress; }
+.choice-no {
+  flex: none;
+  width: 26px;
+  height: 26px;
+  border-radius: 50%;
+  display: grid;
+  place-items: center;
+  font-size: var(--fs-xs);
+  font-weight: 600;
+  color: var(--on-primary);
+  background: var(--primary);
+}
+.choice-hint { margin: var(--sp-3) 0 0; font-size: var(--fs-xs); color: var(--ink-light); text-align: center; }
+
+/* ---------- 인생 상태 뱃지 (LifeStatus) ---------- */
+.life-status { display: flex; flex-wrap: wrap; gap: 6px; }
