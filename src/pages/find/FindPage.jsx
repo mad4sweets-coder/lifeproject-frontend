@@ -1,6 +1,9 @@
 import { useState } from 'react';
 import { Link, useNavigate } from 'react-router-dom';
 import client from '../../api/api';
+import Button from '../../common/ui/Button';
+import Chips from '../../common/ui/Chips';
+import InfoBox from '../../common/ui/InfoBox';
 import common from '../login/LoginPage.module.css'; // 로그인 화면과 같은 카드 모양
 import styles from './FindPage.module.css';           // 탭·결과 칸만 따로
 
@@ -92,25 +95,25 @@ function FindPage() {
 
         <div className={common.cardBody}>
           {/* 탭 */}
-          <div className={styles.tabs}>
-            <button type="button" className={tab === 'FIND_ID' ? styles.tabOn : styles.tab}
-              onClick={() => changeTab('FIND_ID')}>아이디 찾기</button>
-            <button type="button" className={tab === 'RESET_PW' ? styles.tabOn : styles.tab}
-              onClick={() => changeTab('RESET_PW')}>비밀번호 찾기</button>
-          </div>
+          {/* 탭 (공통 Chips: 고른 칩이 금색) */}
+          <Chips
+            items={[{ value: 'FIND_ID', label: '아이디 찾기' }, { value: 'RESET_PW', label: '비밀번호 찾기' }]}
+            selected={tab}
+            onPick={changeTab}
+          />
 
           {/* 아이디 찾기 결과가 나오면 결과만 보여 줌 */}
           {foundId ? (
             <>
               <div className={styles.result}>
-                가입한 아이디는 <b>{foundId}</b> 입니다.
+                <InfoBox label="가입한 아이디" value={foundId} />
               </div>
-              <button type="button" className={common.btnDark} onClick={() => navigate('/login')}>
+              <Button type="primary" size="lg" block className={styles.mainBtn} onClick={() => navigate('/login')}>
                 로그인하러 가기
-              </button>
-              <button type="button" className={common.btn} onClick={() => changeTab('RESET_PW')}>
+              </Button>
+              <Button block className={styles.subBtn} onClick={() => changeTab('RESET_PW')}>
                 비밀번호도 찾기
-              </button>
+              </Button>
             </>
           ) : (
             <>
@@ -127,9 +130,9 @@ function FindPage() {
               <div className={styles.row}>
                 <input className={common.input} value={email} disabled={sent}
                   onChange={(e) => setEmail(e.target.value)} />
-                <button type="button" className={styles.sendBtn} onClick={sendCode}>
+                <Button className={styles.noWrap} onClick={sendCode}>
                   {sent ? '다시 받기' : '인증번호 받기'}
-                </button>
+                </Button>
               </div>
 
               {/* 인증번호를 보낸 뒤에만 보이는 칸 */}
@@ -158,10 +161,10 @@ function FindPage() {
               {error && <div className={common.errorBox}>{error}</div>}
 
               {sent && (
-                <button type="button" className={common.btnDark}
+                <Button type="primary" size="lg" block className={styles.mainBtn}
                   onClick={tab === 'FIND_ID' ? findId : resetPw}>
                   {tab === 'FIND_ID' ? '아이디 확인' : '비밀번호 변경'}
-                </button>
+                </Button>
               )}
             </>
           )}

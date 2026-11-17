@@ -1,6 +1,8 @@
 import { useState } from 'react';
 import { useNavigate } from 'react-router-dom';
 import client from '../../api/api';
+import Button from '../../common/ui/Button';
+import { formatPhone } from '../../utils/phone';
 import styles from './JoinPage.module.css';
 
 // 회원가입 화면 (M01)
@@ -30,13 +32,7 @@ function JoinPage() {
   // 맨 아래 왼쪽에 보여 줄 오류 문구
   const [error, setError] = useState('');
 
-  // 전화번호: 숫자만 남기고 010-1234-5678 모양으로 하이픈 자동 넣기
-  const formatPhone = (v) => {
-    const d = v.replace(/[^0-9]/g, '').slice(0, 11);
-    if (d.length < 4) return d;
-    if (d.length < 8) return d.slice(0, 3) + '-' + d.slice(3);
-    return d.slice(0, 3) + '-' + d.slice(3, 7) + '-' + d.slice(7);
-  };
+  // 전화번호는 utils/phone.js 의 formatPhone 으로 하이픈 자동 넣기
 
   // ① 글자를 칠 때마다 실행
   const handleChange = (e) => {
@@ -138,7 +134,7 @@ function JoinPage() {
               <div className={styles.inputWithBtn}>
                 <input className={styles.input} name="loginId" value={form.loginId}
                   onChange={handleChange} placeholder="영문·숫자 4~20자" />
-                <button type="button" className={styles.btn} onClick={() => checkDuplicate('loginId')}>중복 확인</button>
+                <Button className={styles.noWrap} onClick={() => checkDuplicate('loginId')}>중복 확인</Button>
               </div>
               <p className={hintClass(checked.loginId)}>{msg.loginId}</p>
             </div>
@@ -170,7 +166,7 @@ function JoinPage() {
               <div className={styles.inputWithBtn}>
                 <input className={styles.input} name="nickname" value={form.nickname}
                   onChange={handleChange} placeholder="2~10자" />
-                <button type="button" className={styles.btn} onClick={() => checkDuplicate('nickname')}>중복 확인</button>
+                <Button className={styles.noWrap} onClick={() => checkDuplicate('nickname')}>중복 확인</Button>
               </div>
               <p className={hintClass(checked.nickname)}>{msg.nickname}</p>
             </div>
@@ -183,7 +179,7 @@ function JoinPage() {
               <div className={styles.inputWithBtn}>
                 <input className={styles.input} type="email" name="email" value={form.email}
                   onChange={handleChange} placeholder="아이디·비밀번호 찾기에 사용" />
-                <button type="button" className={styles.btn} onClick={() => checkDuplicate('email')}>중복 확인</button>
+                <Button className={styles.noWrap} onClick={() => checkDuplicate('email')}>중복 확인</Button>
               </div>
               <p className={hintClass(checked.email)}>{msg.email}</p>
             </div>
@@ -223,8 +219,10 @@ function JoinPage() {
         <div className={styles.cardFooter}>
           <p className={styles.error}>{error}</p>
           <div className={styles.footerBtns}>
-            <button type="button" className={styles.btn} onClick={() => navigate('/')}>취소</button>
-            <button type="submit" className={styles.btnDark}>가입하기</button>
+            {/* 엔터로 가입되게 하는 숨은 버튼 (공통 Button 은 type="button") */}
+            <button type="submit" hidden />
+            <Button onClick={() => navigate('/')}>취소</Button>
+            <Button type="primary" onClick={handleSubmit}>가입하기</Button>
           </div>
         </div>
       </form>
