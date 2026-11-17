@@ -82,3 +82,5 @@
 @keyframes ms-flick { 50% { opacity: 0.55; } }
 
 .ms-source { margin: 4px 0 0; font-size: 11px; line-height: 1.5; color: var(--ink-light); }
+
+.ms-guest { margin: var(--sp-2) 0 0; font-size: var(--fs-xs); color: var(--ink-light); text-align: center; }

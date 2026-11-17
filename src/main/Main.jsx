@@ -1,11 +1,11 @@
 // 메인 화면 H01 (주소: /) - M01 시안
 //   - 시대 고르기: OrbitGlobe (value / onChange)
-//   - 태어나기 버튼: POST /api/engine/birth { decade, guestToken }
-//   - 아무 시대에나 태어나기: 궤도를 몇 번 빠르게 돌린 뒤 무작위 시대로 멈춤 → 그 시대로 birth 호출
+//   - 태어나기 버튼: 회원은 퀘스트 설정(/quest, C01) → 비회원은 바로 출생(/birth, C02)  (민승 MainPage 로직 그대로)
+//   - 아무 시대에나 태어나기: 궤도를 몇 번 빠르게 돌린 뒤 무작위 시대로 멈춤 → 잠깐 보여 주고 그 시대로 태어나기
 //   - 실시간 목록: useLiveFeed() 예시 데이터 (C17 소켓 붙으면 교체)
 //   - 실시간 숫자: useAsiaCounter() = 유엔 세계인구전망 2024 아시아 통계로 계산 (그대로 써도 됨)
 import { useEffect, useRef, useState } from 'react';
-import Header from '../common/ui/Header';
+import { useNavigate } from 'react-router-dom';
 import Badge from '../common/ui/Badge';
 import Button from '../common/ui/Button';
 import Panel from '../common/ui/Panel';
@@ -29,6 +29,8 @@ function DiceIcon() {
 }
 
 function Main() {
+  const navigate = useNavigate();
+  const isLogin = !!localStorage.getItem('token'); // 토큰이 있으면 로그인 상태
   const [decade, setDecade] = useState(1980);
   const [spinning, setSpinning] = useState(false);
   const [luck, setLuck] = useState(false); // 운명이 골라 준 시대인지 (칸에 금색 표시)
@@ -39,6 +41,11 @@ function Main() {
   const feed = useLiveFeed();
 
   useEffect(() => () => timers.current.forEach(clearTimeout), []);
+
+  // 태어나기: 회원은 퀘스트 설정(C01) → 비회원은 바로 출생(C02)
+  const goBirth = (d) => {
+    navigate(isLogin ? '/quest' : '/birth', { state: { decade: d } });
+  };
 
   const choose = (d) => {
     setDecade(d);
@@ -64,7 +71,8 @@ function Main() {
         if (i === delays.length - 1) {
           setSpinning(false);
           setLuck(true);
-          // 실제 화면: 여기서 바로 POST /api/engine/birth { decade: d } 호출
+          // 골라진 시대를 1.2초 보여 준 뒤 그 시대로 태어나기
+          timers.current.push(setTimeout(() => goBirth(d), 1200));
         }
       }, ms));
     });
@@ -72,7 +80,6 @@ function Main() {
 
   return (
     <div className="ms sky">
-      <Header />
       <main className="ms-in">
         <section className="ms-hero">
           <Badge live>지금 아시아 48개국 실시간</Badge>
@@ -86,14 +93,16 @@ function Main() {
           </div>
 
           <div className="ms-acts">
-            <Button type="primary" size="lg" className="ms-cta" disabled={spinning}>
+            <Button type="primary" size="lg" className="ms-cta" disabled={spinning} onClick={() => goBirth(decade)}>
               <StarIcon size={14} color="var(--on-primary)" />{decade}년대에 태어나기
             </Button>
-            <Button size="lg" className="ms-cont" disabled={spinning}>이어서 살기<small>프리야 싱, 34세, 인도</small></Button>
+            {/* TODO: 진행 중인 인생 조회 GET /api/engine/current 붙이면 활성화 (C03) */}
+            <Button size="lg" className="ms-cont" disabled>이어서 살기<small>진행 중인 인생이 없어요</small></Button>
           </div>
           <button type="button" className="ms-random" onClick={spin} disabled={spinning}>
             <DiceIcon />{spinning ? '운명이 시대를 고르는 중…' : '시대도 운에 맡기고 아무 때나 태어나기'}
           </button>
+          {!isLogin && <p className="ms-guest">비회원은 퀘스트 없이 바로 태어나요. 인생은 이 브라우저에만 7일 동안 저장돼요.</p>}
         </section>
 
         <Panel title="지금 아시아" className="ms-globe"

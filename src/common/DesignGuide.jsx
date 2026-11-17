@@ -8,7 +8,6 @@ import StatBar from './ui/StatBar';
 import Badge from './ui/Badge';
 import Modal from './ui/Modal';
 import ChoiceList from './ui/ChoiceList';
-import Header from './ui/Header';
 import GameBar from './ui/GameBar';
 import Chips from './ui/Chips';
 import OptionGrid from './ui/OptionGrid';
@@ -58,7 +57,6 @@ function DesignGuide() {
 
   return (
     <>
-    <Header nickname="동현" onLogout={() => {}} />
     <GameBar age={34} year={1981} savedYear={1981} paused={paused} speed={speed}
       onPause={() => setPaused(!paused)} onSpeed={setSpeed} onShop={() => {}} onHome={() => {}} />
     <div className="page col">
@@ -163,7 +161,7 @@ function DesignGuide() {
       </Panel>
 
       <h2 style={{ marginTop: 16 }}>와이어프레임 부품</h2>
-      <p className="sub">위에 붙어 있는 헤더(Header)와 게임 진행 바(GameBar)도 공통 부품이에요.</p>
+      <p className="sub">맨 위 헤더(Header, App.jsx에서 모든 화면에 붙음)와 게임 진행 바(GameBar)도 공통 부품이에요.</p>
 
       <Panel title="11. 연대 선택 목록형 (OptionGrid) - 지구본을 못 쓰는 좁은 화면용">
         <OptionGrid selected={decade} onPick={setDecade}

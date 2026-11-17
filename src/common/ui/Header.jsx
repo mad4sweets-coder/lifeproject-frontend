@@ -1,12 +1,33 @@
-// 상단 헤더 (모든 화면 공통)
-// 예: <Header nickname="동현" onLogout={logout} />  (비회원이면 nickname 생략 → 로그인·회원가입 버튼)
-import { Link, NavLink, useNavigate } from 'react-router-dom';
+// 상단 헤더 (모든 화면 공통) - App.jsx에서 <Routes> 위에 한 번만 붙어요
+// 로그인 안 했을 때: 시작하기 · 추모관 · 내 인생들 | 로그인 · 회원가입
+// 로그인 했을 때:   시작하기 · 추모관 · 내 인생들 (· 관리자) | 닉네임 님 · 로그아웃
+// 로그인 정보는 localStorage(token, nickname, memberRole)에서 읽어요 (민승 Header 로직 그대로)
+import { Link, NavLink, useLocation, useNavigate } from 'react-router-dom';
 import Button from './Button';
 import StarIcon from './StarIcon';
 import './ui.css';
 
-function Header({ nickname, onLogout }) {
+function Header() {
   const navigate = useNavigate();
+
+  // 주소가 바뀔 때마다 Header를 다시 그리게 함
+  // (로그인 후 메인으로 이동하면 → 다시 그려지면서 토큰을 새로 읽음)
+  useLocation();
+
+  // 브라우저에 저장된 값 읽기 (없으면 null)
+  const token = localStorage.getItem('token');
+  const nickname = localStorage.getItem('nickname');
+  const isAdmin = localStorage.getItem('memberRole') === 'ADMIN';
+
+  // 로그아웃: 저장해 둔 토큰·닉네임·권한을 지우고 메인으로
+  // (비회원 임시 토큰 guestToken 은 다른 키라서 지우지 않음)
+  const handleLogout = () => {
+    localStorage.removeItem('token');
+    localStorage.removeItem('nickname');
+    localStorage.removeItem('memberRole');
+    navigate('/');
+  };
+
   const navClass = ({ isActive }) => (isActive ? 'on' : '');
 
   return (
@@ -17,13 +38,14 @@ function Header({ nickname, onLogout }) {
           <NavLink to="/" end className={navClass}>시작하기</NavLink>
           <NavLink to="/memorial" className={navClass}>추모관</NavLink>
           <NavLink to="/mypage" className={navClass}>내 인생들</NavLink>
+          {token && isAdmin && <NavLink to="/admin" className={navClass}>관리자</NavLink>}
         </nav>
         <div className="header-space" />
         <div className="header-right">
-          {nickname ? (
+          {token ? (
             <>
-              <span className="header-user"><b>{nickname}</b>님</span>
-              <Button size="sm" onClick={onLogout}>로그아웃</Button>
+              <span className="header-user"><b>{nickname}</b> 님</span>
+              <Button size="sm" onClick={handleLogout}>로그아웃</Button>
             </>
           ) : (
             <>

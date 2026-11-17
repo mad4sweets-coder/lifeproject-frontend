@@ -1,0 +1,142 @@
+/* 회원가입 화면 - 밤하늘 디자인 (design.css 변수 사용) */
+
+/* 화면 가운데 정렬 */
+.container {
+  display: flex;
+  justify-content: center;
+  padding: var(--sp-6) var(--sp-3);
+}
+
+/* 가운데 상자 */
+.card {
+  width: 500px;
+  background: var(--panel);
+  border: 1px solid var(--line-strong);
+  border-radius: var(--radius-lg);
+  box-shadow: var(--shadow);
+  overflow: hidden;
+}
+
+.cardTitle {
+  padding: var(--sp-4) var(--sp-4) 0;
+  font-family: var(--font-display);
+  font-size: var(--fs-xl);
+  font-weight: 700;
+  color: var(--ink);
+}
+
+.cardBody {
+  padding: var(--sp-4);
+}
+
+.cardFooter {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  padding: var(--sp-3) var(--sp-4);
+  border-top: 1px solid var(--line);
+}
+
+.footerBtns {
+  display: flex;
+  gap: var(--sp-2);
+}
+
+/* 왼쪽 이름 + 오른쪽 입력 한 줄 */
+.row {
+  display: flex;
+  align-items: flex-start;
+  margin-bottom: var(--sp-2);
+}
+
+.label {
+  width: 110px;
+  font-size: var(--fs-sm);
+  color: var(--ink-sub);
+  padding-top: 11px;
+}
+
+.field {
+  flex: 1;
+}
+
+.inputWithBtn {
+  display: flex;
+  gap: 6px;
+}
+
+.input {
+  width: 100%;
+  height: 44px;
+  padding: 0 var(--sp-3);
+  font-family: var(--font-body);
+  font-size: var(--fs-sm);
+  color: var(--ink);
+  background: var(--bg-deep);
+  border: 1px solid var(--line-strong);
+  border-radius: var(--radius);
+}
+
+.input:focus {
+  outline: none;
+  border-color: var(--primary);
+  box-shadow: 0 0 0 3px var(--primary-light);
+}
+
+/* 버튼 */
+.btn {
+  height: 44px;
+  padding: 0 var(--sp-3);
+  font-family: var(--font-body);
+  font-size: var(--fs-sm);
+  color: var(--ink);
+  background: transparent;
+  border: 1px solid var(--line-strong);
+  border-radius: var(--radius);
+  cursor: pointer;
+  white-space: nowrap;
+}
+
+.btn:hover {
+  background: var(--panel-2);
+}
+
+.btnDark {
+  height: 44px;
+  padding: 0 var(--sp-4);
+  font-family: var(--font-body);
+  font-size: var(--fs-sm);
+  font-weight: 600;
+  color: var(--on-primary);
+  background: var(--primary);
+  border: 1px solid var(--primary);
+  border-radius: var(--radius);
+  cursor: pointer;
+}
+
+.btnDark:hover {
+  box-shadow: var(--glow);
+}
+
+/* 칸 아래 문구 */
+.hint {
+  font-size: var(--fs-xs);
+  color: var(--red);
+  min-height: 16px;
+  margin: 4px 0 0;
+}
+
+.hintOk {
+  font-size: var(--fs-xs);
+  color: var(--green);
+  min-height: 16px;
+  margin: 4px 0 0;
+}
+
+.error {
+  flex: 1;
+  font-size: var(--fs-xs);
+  color: var(--red);
+  margin: 0;
+  padding-right: var(--sp-2);
+}
