@@ -9,6 +9,7 @@ import VillageTest from './engine/village/VillageTest';
 import ResultPage from './pages/result/ResultPage';
 import MyPage from './pages/mypage/MyPage';
 import EditPage from './pages/mypage/EditPage';
+import FindPage from './pages/find/FindPage';
 
 function App() {
   return (
@@ -22,6 +23,7 @@ function App() {
         <Route path="/join" element={<JoinPage />} />
         <Route path="/mypage" element={<MyPage />} />
         <Route path="/mypage/edit" element={<EditPage />} />
+        <Route path="/find" element={<FindPage />} />
         {/* C02 출생 추첨 */}
         <Route path="/birth" element={<BirthPage />} />
         {/* C18 인생 결과 */}
