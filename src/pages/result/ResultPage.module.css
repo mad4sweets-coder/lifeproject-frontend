@@ -1,0 +1,31 @@
+/* C18 인생 결과 화면 */
+.result { max-width: 760px; }
+
+.head { text-align: center; }
+.head h1 { margin: var(--sp-2) 0; }
+
+.bigRow {
+  display: grid;
+  grid-template-columns: repeat(3, 1fr);
+  gap: var(--sp-3);
+  text-align: center;
+}
+
+.stats {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: var(--sp-2) var(--sp-4);
+  margin-bottom: var(--sp-3);
+}
+
+.quest {
+  display: flex;
+  align-items: center;
+  gap: var(--sp-2);
+}
+.quest span:first-child { color: var(--primary); }
+.quest span:nth-child(2) { flex: 1; }
+
+@media (max-width: 600px) {
+  .bigRow, .stats { grid-template-columns: 1fr; }
+}
