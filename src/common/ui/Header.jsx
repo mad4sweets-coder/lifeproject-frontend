@@ -1,6 +1,7 @@
 // 상단 헤더 (모든 화면 공통) - App.jsx에서 <Routes> 위에 한 번만 붙어요
 // 로그인 안 했을 때: 시작하기 · 추모관 · 내 인생들 | 로그인 · 회원가입
-// 로그인 했을 때:   시작하기 · 추모관 · 내 인생들 (· 관리자) | 닉네임 님 · 로그아웃
+// 로그인 했을 때:   시작하기 · 추모관 · 내 인생들 (· 관리자) | 닉네임 님 · 마이페이지 · 로그아웃
+// 내 인생들 · 마이페이지 둘 다 M04(/mypage)로 이동
 // 로그인 정보는 localStorage(token, nickname, memberRole)에서 읽어요 (민승 Header 로직 그대로)
 import { Link, NavLink, useLocation, useNavigate } from 'react-router-dom';
 import Button from './Button';
