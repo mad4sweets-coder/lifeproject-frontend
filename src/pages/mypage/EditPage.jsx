@@ -24,6 +24,10 @@ function EditPage() {
   // 안내 문구
   const [nickMsg, setNickMsg] = useState('');
   const [emailMsg, setEmailMsg] = useState('');
+
+  // 이메일 변경 인증 (이메일을 바꿨을 때만 씀)
+  const [emailCode, setEmailCode] = useState('');
+  const [emailSent, setEmailSent] = useState(false); // 새 이메일로 인증번호를 보냈는지
   const [message, setMessage] = useState(''); // 저장 결과
   const [error, setError] = useState('');     // 저장 오류
 
@@ -55,15 +59,27 @@ function EditPage() {
   // 2. 닉네임 중복 확인 (원래 닉네임 그대로면 확인 필요 없음)
   const checkNickname = async () => {
     if (nickname === my.nickname) return setNickMsg('지금 쓰는 닉네임이에요.');
-    const res = await client.get('/api/members/check-nickname', { params: { nickname } });
+    const res = await client.get('/api/members/checkNickname', { params: { nickname } });
     setNickMsg(res.data.available ? '사용할 수 있는 닉네임이에요.' : '이미 사용 중인 닉네임이에요.');
   };
 
   // 3. 이메일 중복 확인
   const checkEmail = async () => {
     if (email === my.email) return setEmailMsg('지금 쓰는 이메일이에요.');
-    const res = await client.get('/api/members/check-email', { params: { email } });
+    const res = await client.get('/api/members/checkEmail', { params: { email } });
     setEmailMsg(res.data.available ? '사용할 수 있는 이메일이에요.' : '이미 사용 중인 이메일이에요.');
+  };
+
+  // 3-1. 새 이메일로 인증번호 받기 → POST /api/members/me/emailCode
+  const sendEmailCode = async () => {
+    setEmailMsg('');
+    try {
+      const res = await client.post('/api/members/me/emailCode', { email });
+      setEmailSent(true);
+      setEmailMsg(res.data.message);
+    } catch (err) {
+      setEmailMsg(err.response?.data?.message || '인증번호를 보내지 못했습니다.');
+    }
   };
 
   // 4. 저장하기 → PUT /api/members/me
@@ -72,10 +88,11 @@ function EditPage() {
     setError('');
     if (!currentPassword) return setError('현재 비밀번호를 입력해 주세요.');
     if (newPassword && newPassword !== newPasswordCheck) return setError('새 비밀번호 확인이 일치하지 않습니다.');
+    if (email !== my.email && !emailCode) return setError('이메일을 바꾸려면 새 이메일로 받은 인증번호를 입력해 주세요.');
 
     try {
       const res = await client.put('/api/members/me', {
-        nickname, email, currentPassword, newPassword, newPasswordCheck,
+        nickname, email, currentPassword, newPassword, newPasswordCheck, emailCode,
       });
       // 헤더 닉네임도 바꾸기
       localStorage.setItem('nickname', res.data.nickname);
@@ -83,6 +100,9 @@ function EditPage() {
       setCurrentPassword('');
       setNewPassword('');
       setNewPasswordCheck('');
+      setEmailCode('');
+      setEmailSent(false);
+      setEmailMsg('');
       setMessage('저장했습니다.');
     } catch (err) {
       setError(err.response?.data?.message || '저장하지 못했습니다.');
@@ -160,9 +180,21 @@ function EditPage() {
           <div className={styles.row}>
             <label>이메일</label>
             <input className={styles.input} value={email}
-              onChange={(e) => { setEmail(e.target.value); setEmailMsg(''); }} />
+              onChange={(e) => { setEmail(e.target.value); setEmailMsg(''); setEmailSent(false); setEmailCode(''); }} />
             <Button onClick={checkEmail}>중복 확인</Button>
           </div>
+
+          {/* 이메일을 바꿨을 때만: 새 이메일로 인증번호 받기 */}
+          {email !== my.email && (
+            <div className={styles.row}>
+              <label>이메일 인증번호</label>
+              <input className={styles.input} value={emailCode} maxLength={6}
+                placeholder={emailSent ? '메일로 받은 6자리' : '먼저 인증번호를 받아 주세요'}
+                disabled={!emailSent}
+                onChange={(e) => setEmailCode(e.target.value.replace(/[^0-9]/g, ''))} />
+              <Button onClick={sendEmailCode}>{emailSent ? '다시 받기' : '인증번호 받기'}</Button>
+            </div>
+          )}
           {emailMsg && <p className={styles.hint}>{emailMsg}</p>}
 
           {error && <div className={styles.error}>{error}</div>}

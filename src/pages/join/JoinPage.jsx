@@ -46,9 +46,9 @@ function JoinPage() {
     }
 
     const urls = {
-      loginId: `/api/members/check-id?loginId=${encodeURIComponent(value)}`,
-      nickname: `/api/members/check-nickname?nickname=${encodeURIComponent(value)}`,
-      email: `/api/members/check-email?email=${encodeURIComponent(value)}`,
+      loginId: `/api/members/checkId?loginId=${encodeURIComponent(value)}`,
+      nickname: `/api/members/checkNickname?nickname=${encodeURIComponent(value)}`,
+      email: `/api/members/checkEmail?email=${encodeURIComponent(value)}`,
     };
 
     try {
