@@ -1,35 +1,6 @@
-/* 아이디·비밀번호 찾기 (M09) - 탭·결과 칸만 (카드·입력칸은 LoginPage.module.css) */
-
-/* 탭 2개 */
-.tabs {
-  display: flex;
-  gap: var(--sp-1);
-  padding: var(--sp-1);
-  background: var(--bg-deep);
-  border-radius: var(--radius);
-}
-
-.tab,
-.tabOn {
-  flex: 1;
-  height: 38px;
-  border: none;
-  border-radius: var(--radius);
-  font-family: var(--font-body);
-  font-size: var(--fs-sm);
-  cursor: pointer;
-}
-
-.tab {
-  background: transparent;
-  color: var(--ink-sub);
-}
-
-.tabOn {
-  background: var(--primary);
-  color: var(--on-primary);
-  font-weight: 700;
-}
+/* 아이디·비밀번호 찾기 (M09)
+   탭 = 공통 Chips, 버튼 = 공통 Button, 찾은 아이디 = 공통 InfoBox
+   카드·입력칸은 LoginPage.module.css 같이 씀 → 여기는 간격·안내 문구만 */
 
 /* 이메일 칸 + 인증번호 받기 버튼 한 줄 */
 .row {
@@ -37,20 +8,19 @@
   gap: var(--sp-2);
 }
 
-.sendBtn {
+/* 버튼 글자가 두 줄로 안 꺾이게 */
+.noWrap {
+  white-space: nowrap;
   flex-shrink: 0;
-  padding: 0 var(--sp-3);
-  font-family: var(--font-body);
-  font-size: var(--fs-xs);
-  color: var(--ink);
-  background: var(--panel-2);
-  border: 1px solid var(--line-strong);
-  border-radius: var(--radius);
-  cursor: pointer;
 }
 
-.sendBtn:hover {
-  border-color: var(--primary);
+/* 버튼 위쪽 간격 */
+.mainBtn {
+  margin-top: var(--sp-4);
+}
+
+.subBtn {
+  margin-top: var(--sp-2);
 }
 
 /* 안내 문구 (초록) */
@@ -64,20 +34,7 @@
   border-radius: var(--radius);
 }
 
-/* 찾은 아이디 */
+/* 찾은 아이디 칸 위 간격 */
 .result {
   margin-top: var(--sp-4);
-  padding: var(--sp-4) var(--sp-3);
-  text-align: center;
-  color: var(--ink-sub);
-  background: var(--panel-2);
-  border-radius: var(--radius);
-}
-
-.result b {
-  display: block;
-  margin-top: var(--sp-2);
-  font-family: var(--font-display);
-  font-size: var(--fs-xl);
-  color: var(--primary);
 }

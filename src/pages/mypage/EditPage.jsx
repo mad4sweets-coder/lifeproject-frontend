@@ -4,6 +4,7 @@ import client from '../../api/api';
 import Button from '../../common/ui/Button';
 import Modal from '../../common/ui/Modal';
 import MyPageSide from './MyPageSide';
+import { formatPhone } from '../../utils/phone';
 import common from './MyPage.module.css'; // 마이페이지와 같은 틀 (container, card, title …)
 import styles from './EditPage.module.css'; // 이 화면만 쓰는 입력칸 모양
 
@@ -17,6 +18,7 @@ function EditPage() {
   // 입력칸 값
   const [nickname, setNickname] = useState('');
   const [email, setEmail] = useState('');
+  const [phone, setPhone] = useState(''); // 010-1234-5678 모양으로 보여 줌
   const [currentPassword, setCurrentPassword] = useState('');
   const [newPassword, setNewPassword] = useState('');
   const [newPasswordCheck, setNewPasswordCheck] = useState('');
@@ -47,6 +49,7 @@ function EditPage() {
         setMy(res.data);
         setNickname(res.data.nickname);
         setEmail(res.data.email);
+        setPhone(formatPhone(res.data.phone)); // 예전 가입 회원은 비어 있음
       })
       .catch((err) => {
         if (err.response?.status === 401) {
@@ -89,14 +92,15 @@ function EditPage() {
     if (!currentPassword) return setError('현재 비밀번호를 입력해 주세요.');
     if (newPassword && newPassword !== newPasswordCheck) return setError('새 비밀번호 확인이 일치하지 않습니다.');
     if (email !== my.email && !emailCode) return setError('이메일을 바꾸려면 새 이메일로 받은 인증번호를 입력해 주세요.');
+    if (!/^01[0-9]{8,9}$/.test(phone.replace(/-/g, ''))) return setError('전화번호를 올바르게 입력해 주세요. (예: 010-1234-5678)');
 
     try {
       const res = await client.put('/api/members/me', {
-        nickname, email, currentPassword, newPassword, newPasswordCheck, emailCode,
+        nickname, email, phone, currentPassword, newPassword, newPasswordCheck, emailCode,
       });
       // 헤더 닉네임도 바꾸기
       localStorage.setItem('nickname', res.data.nickname);
-      setMy({ ...my, nickname, email });
+      setMy({ ...my, nickname, email, phone: phone.replace(/-/g, '') });
       setCurrentPassword('');
       setNewPassword('');
       setNewPasswordCheck('');
@@ -196,6 +200,12 @@ function EditPage() {
             </div>
           )}
           {emailMsg && <p className={styles.hint}>{emailMsg}</p>}
+
+          <div className={styles.row}>
+            <label>전화번호</label>
+            <input className={styles.input} type="tel" value={phone} placeholder="010-1234-5678"
+              onChange={(e) => setPhone(formatPhone(e.target.value))} />
+          </div>
 
           {error && <div className={styles.error}>{error}</div>}
           {message && <div className={styles.ok}>{message}</div>}

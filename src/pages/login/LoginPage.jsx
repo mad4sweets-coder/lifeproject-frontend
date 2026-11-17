@@ -1,6 +1,7 @@
 import { useState } from 'react';
 import { Link, useNavigate } from 'react-router-dom';
 import client from '../../api/api';
+import Button from '../../common/ui/Button';
 import styles from './LoginPage.module.css';
 
 // 로그인 화면 (M02)
@@ -59,7 +60,9 @@ function LoginPage() {
           {/* 오류 문구 칸 (와이어프레임의 회색 상자) */}
           {error && <div className={styles.errorBox}>{error}</div>}
 
-          <button type="submit" className={styles.btnDark}>로그인</button>
+          {/* 엔터로 로그인되게 하는 숨은 버튼 (공통 Button 은 type="button" 이라 엔터 제출이 안 됨) */}
+          <button type="submit" hidden />
+          <Button type="primary" size="lg" block className={styles.mainBtn} onClick={handleSubmit}>로그인</Button>
 
           <div className={styles.links}>
             <Link to="/find">아이디 · 비밀번호 찾기</Link>
@@ -67,9 +70,9 @@ function LoginPage() {
             <Link to="/join">회원가입</Link>
           </div>
 
-          <button type="button" className={styles.btn} onClick={() => navigate('/')}>
+          <Button block className={styles.subBtn} onClick={() => navigate('/')}>
             로그인 없이 태어나기
-          </button>
+          </Button>
           <p className={styles.hint}>비회원은 퀘스트·포인트 없이 진행됩니다.</p>
         </div>
       </form>

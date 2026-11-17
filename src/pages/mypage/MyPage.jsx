@@ -3,6 +3,7 @@ import { useNavigate } from 'react-router-dom';
 import client from '../../api/api';
 import Button from '../../common/ui/Button';
 import MyPageSide from './MyPageSide';
+import { formatPhone } from '../../utils/phone';
 import styles from './MyPage.module.css';
 
 // 마이페이지 (M04)  주소: /mypage
@@ -56,6 +57,7 @@ function MyPage() {
             <dt>아이디</dt><dd>{my.loginId}</dd>
             <dt>닉네임</dt><dd>{my.nickname}</dd>
             <dt>이메일</dt><dd>{my.email}</dd>
+            <dt>전화번호</dt><dd>{my.phone ? formatPhone(my.phone) : '등록되지 않음'}</dd>
             <dt>가입 일자</dt><dd>{my.joinDate}</dd>
           </dl>
         </section>
