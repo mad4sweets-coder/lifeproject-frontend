@@ -13,6 +13,7 @@ import Button from '../../common/ui/Button';
 import LogItem from '../../common/ui/LogItem';
 import StatChart from './StatChart';
 import StoryPanel from './StoryPanel';
+import QnaPanel from './QnaPanel';
 import styles from './ResultPage.module.css';
 
 // 학력 코드 → 화면 글자
@@ -35,6 +36,7 @@ function ResultPage() {
   const [error, setError] = useState('');
   const [showAllLogs, setShowAllLogs] = useState(false);
   const [showStory, setShowStory] = useState(false); // C19 AI 인생 이야기 펼치기
+  const [showQna, setShowQna] = useState(false);     // C20 인생 Q&A 펼치기
 
   useEffect(() => {
     const isLogin = !!localStorage.getItem('token');
@@ -147,11 +149,15 @@ function ResultPage() {
         )}
         {r.memorialPostId && <Badge color="gold">추모관에 올린 인생</Badge>}
         {!showStory && <Button onClick={() => setShowStory(true)}>AI 인생 이야기</Button>}
+        {!showQna && <Button onClick={() => setShowQna(true)}>이 인생에 대해 질문하기</Button>}
         <Button type="light" onClick={() => navigate('/')}>다시 태어나기</Button>
       </div>
 
       {/* 8. C19 AI 인생 이야기 (버튼을 누르면 펼쳐짐) */}
       {showStory && <StoryPanel lifeId={lifeId} />}
+
+      {/* 9. C20 인생 Q&A 챗봇 */}
+      {showQna && <QnaPanel lifeId={lifeId} />}
     </div>
   );
 }
