@@ -10,6 +10,7 @@ import ResultPage from './pages/result/ResultPage';
 import MyPage from './pages/mypage/MyPage';
 import EditPage from './pages/mypage/EditPage';
 import FindPage from './pages/find/FindPage';
+import AdminMain from './pages/admin/AdminMain';
 
 function App() {
   return (
@@ -28,6 +29,8 @@ function App() {
         <Route path="/birth" element={<BirthPage />} />
         {/* C18 인생 결과 */}
         <Route path="/result/:lifeId" element={<ResultPage />} />
+        {/* A04 관리자 메인 */}
+        <Route path="/admin" element={<AdminMain />} />
         {/* 디자인 가이드 (공통) */}
         <Route path="/design-guide" element={<DesignGuide />} />
         {/* C08 마을 이동 테스트 (엔진) */}
