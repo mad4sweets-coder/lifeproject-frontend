@@ -7,6 +7,8 @@ import BirthPage from './pages/birth/BirthPage';
 import DesignGuide from './common/DesignGuide';
 import VillageTest from './engine/village/VillageTest';
 import ResultPage from './pages/result/ResultPage';
+import MyPage from './pages/mypage/MyPage';
+import EditPage from './pages/mypage/EditPage';
 
 function App() {
   return (
@@ -18,6 +20,8 @@ function App() {
         <Route path="/" element={<Main />} />
         <Route path="/login" element={<LoginPage />} />
         <Route path="/join" element={<JoinPage />} />
+        <Route path="/mypage" element={<MyPage />} />
+        <Route path="/mypage/edit" element={<EditPage />} />
         {/* C02 출생 추첨 */}
         <Route path="/birth" element={<BirthPage />} />
         {/* C18 인생 결과 */}
