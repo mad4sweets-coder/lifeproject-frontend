@@ -1,49 +1,18 @@
-import { useEffect, useState } from 'react';
-import { useNavigate } from 'react-router-dom';
-import client from '../../api/api';
+import { useNavigate, useOutletContext } from 'react-router-dom';
 import Button from '../../common/ui/Button';
-import MyPageSide from './MyPageSide';
 import { formatPhone } from '../../utils/phone';
 import styles from './MyPage.module.css';
 
 // 마이페이지 (M04)  주소: /mypage
-// 와이어프레임 15쪽: 왼쪽 메뉴 + 가입 정보 + 숫자 칸 3개 + 진행 중인 인생 + 전생 기록·특성 강화 바로가기
+// 와이어프레임 15쪽: (왼쪽 메뉴는 MyPageLayout) 가입 정보 + 숫자 칸 3개 + 진행 중인 인생 + 전생 기록·특성 강화 바로가기
 function MyPage() {
   const navigate = useNavigate();
-  const [my, setMy] = useState(null); // 서버에서 받은 마이페이지 정보 (받기 전엔 null)
-
-  // 화면이 처음 열릴 때 한 번 실행
-  useEffect(() => {
-    // 1. 토큰이 없으면 로그인 화면으로 (M04: 로그인한 회원만)
-    if (!localStorage.getItem('token')) {
-      navigate('/login');
-      return;
-    }
-
-    // 2. 서버에 내 정보 요청 (토큰은 api.js 가 자동으로 붙여 줌)
-    client.get('/api/members/me')
-      .then((res) => setMy(res.data))
-      .catch((err) => {
-        // 3. 토큰이 만료됐으면(401) 토큰 지우고 로그인 화면으로
-        if (err.response?.status === 401) {
-          localStorage.removeItem('token');
-          navigate('/login');
-        }
-      });
-  }, [navigate]);
-
-  // 서버 응답이 오기 전
-  if (!my) {
-    return <div className={styles.loading}>불러오는 중…</div>;
-  }
+  // 내 정보는 MyPageLayout 이 서버에서 받아서 넘겨 줌 (여기서는 꺼내 쓰기만)
+  const { my } = useOutletContext();
 
   return (
-    <div className={styles.container}>
-      {/* ===== 왼쪽 메뉴 (MyPageSide.jsx) ===== */}
-      <MyPageSide active="home" nickname={my.nickname} loginId={my.loginId} />
-
-      {/* ===== 오른쪽 내용 ===== */}
-      <main className={styles.main}>
+    // 오른쪽 내용만 (왼쪽 메뉴는 MyPageLayout)
+    <main className={styles.main}>
         <h1 className={styles.title}>마이페이지</h1>
         <p className={styles.lead}>내 가입 정보와 지금까지 살아 본 인생을 확인해요.</p>
 
@@ -112,7 +81,6 @@ function MyPage() {
           </section>
         </div>
       </main>
-    </div>
   );
 }
 
