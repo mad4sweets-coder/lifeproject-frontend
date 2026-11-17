@@ -22,6 +22,10 @@ import BigStat from './ui/BigStat';
 import FeedList from './ui/FeedList';
 import StarIcon from './ui/StarIcon';
 import OrbitGlobe, { DECADES } from './ui/OrbitGlobe';
+import YearEvents from './ui/YearEvents';
+import EventChoiceModal from './ui/EventChoiceModal';
+import LifeStatus from './ui/LifeStatus';
+import EffectChips from './ui/EffectChips';
 
 const COLORS = [
   ['--bg', '바탕 (밤하늘)'], ['--bg-deep', '더 어두운 바탕'], ['--panel', '카드 안쪽'], ['--panel-2', '카드 안 칸'],
@@ -37,6 +41,21 @@ const FOCUS_SAMPLE = [
   { value: 'SPORT', label: '운동', desc: '건강↑' },
 ];
 
+// 엔진 응답 예시 (/api/engine/next)
+const EVENTS_SAMPLE = [
+  { eventId: 'LE_MEET', title: '새로운 만남', logText: '34세, 마음이 통하는 사람을 만났다.', effHappiness: 8, effRelation: 6, choice: false },
+  { eventId: 'LE_DISEASE_TB', title: '결핵', logText: '몸이 좋지 않아 병원을 찾았더니 결핵이라고 했다.', effHealth: -15, effHappiness: -4, choice: false },
+  { eventId: 'LE_PROMOTE', title: '승진', logText: '성실함을 인정받아 승진했다.', effHappiness: 5, effIncomeRate: 0.1, choice: false },
+];
+const CHOICE_SAMPLE = {
+  eventId: 'LE_SHOP', logText: '27세, 가게 창업 기회가 찾아왔다.',
+  choices: [{ choiceId: 1, choiceText: '모은 돈으로 작은 가게를 연다' }, { choiceId: 2, choiceText: '지금 하던 일을 계속한다' }],
+};
+const LIFE_SAMPLE = {
+  currentAge: 34, eduLevel: 'HIGH', schoolStatus: 'GRADUATED', jobStatus: 'EMPLOYED', jobName: '방직 공장 기술공',
+  marriedYn: 'Y', childCount: 2, parentAlive: 'N', birthCountry: 'IND', currentCountry: 'IND',
+};
+
 const FEED_SAMPLE = [
   { id: 1, time: '방금', title: '방글라데시 다카', sub: '여자아이', side: '형편 2' },
   { id: 2, time: '4초 전', title: '베트남 하노이', sub: '남자아이', side: '형편 3' },
@@ -51,6 +70,7 @@ function DesignGuide() {
   const [quests, setQuests] = useState(['Q1']);
   const [paused, setPaused] = useState(false);
   const [speed, setSpeed] = useState(1);
+  const [choiceOpen, setChoiceOpen] = useState(false);
 
   const toggleQuest = (q) =>
     setQuests(quests.includes(q) ? quests.filter((x) => x !== q) : [...quests, q]);
@@ -140,6 +160,30 @@ function DesignGuide() {
             <BigStat label="평균 소득" value="1,820만 원" />
           </div>
         </Panel>
+      </div>
+
+      <h2 style={{ marginTop: 16 }}>인생 진행 화면 부품 (C03·C09)</h2>
+      <p className="sub">엔진 /api/engine/next 응답을 그대로 넣으면 돼요. events → YearEvents, needChoice·pendingEvent → EventChoiceModal, 응답 전체 → LifeStatus</p>
+
+      <div className="row" style={{ alignItems: 'stretch' }}>
+        <Panel title="올해 일어난 일 (YearEvents)" style={{ flex: 2, minWidth: 360 }}>
+          <div className="col" style={{ gap: 24 }}>
+            <YearEvents age={34} year={1981} events={EVENTS_SAMPLE} />
+            <YearEvents age={35} year={1982} events={[]} />
+          </div>
+        </Panel>
+        <div className="col" style={{ flex: 1, minWidth: 280 }}>
+          <Panel title="인생 상태 (LifeStatus)">
+            <LifeStatus life={LIFE_SAMPLE} />
+          </Panel>
+          <Panel title="효과 칩 (EffectChips)">
+            <EffectChips effect={{ effHealth: -10, effHappiness: 5, effIncomeRate: 0.1, effWealthRate: -0.3 }} />
+          </Panel>
+          <Panel title="선택 이벤트 창 (EventChoiceModal)">
+            <Button type="primary" onClick={() => setChoiceOpen(true)}>선택 이벤트 열기</Button>
+            <EventChoiceModal open={choiceOpen} event={CHOICE_SAMPLE} onChoose={() => setChoiceOpen(false)} />
+          </Panel>
+        </div>
       </div>
 
       <Panel title="9. 선택 창 (Modal + ChoiceList)">
