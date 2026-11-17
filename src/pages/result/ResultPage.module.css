@@ -29,3 +29,19 @@
 @media (max-width: 600px) {
   .bigRow, .stats { grid-template-columns: 1fr; }
 }
+
+/* C19 AI 인생 이야기 */
+.story p {
+  line-height: 1.8;
+  margin: 0 0 var(--sp-3);
+}
+.story sup { font-size: 0.7em; margin-left: 1px; }
+
+.sources {
+  border-top: 1px solid var(--line);
+  padding-top: var(--sp-2);
+  margin-top: var(--sp-2);
+  font-size: var(--fs-sm);
+}
+.sources ol { margin: var(--sp-1) 0 var(--sp-2); padding-left: 1.4em; }
+.sources a { color: var(--ink-sub); }
