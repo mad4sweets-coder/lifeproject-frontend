@@ -7,14 +7,19 @@ import styles from './JoinPage.module.css';
 function JoinPage() {
   const navigate = useNavigate();
 
-  // 입력값 5개를 한 상자에
+  // 입력값 6개를 한 상자에
   const [form, setForm] = useState({
     loginId: '',
     password: '',
     passwordCheck: '',
     nickname: '',
     email: '',
+    phone: '',
   });
+
+  // 개인정보 수집·이용 동의 (필수)
+  const [agreed, setAgreed] = useState(false);
+  const [showTerms, setShowTerms] = useState(false); // 동의 내용 펼치기
 
   // 중복 확인 통과 여부 (true 여야 가입 가능)
   const [checked, setChecked] = useState({ loginId: false, nickname: false, email: false });
@@ -25,9 +30,18 @@ function JoinPage() {
   // 맨 아래 왼쪽에 보여 줄 오류 문구
   const [error, setError] = useState('');
 
+  // 전화번호: 숫자만 남기고 010-1234-5678 모양으로 하이픈 자동 넣기
+  const formatPhone = (v) => {
+    const d = v.replace(/[^0-9]/g, '').slice(0, 11);
+    if (d.length < 4) return d;
+    if (d.length < 8) return d.slice(0, 3) + '-' + d.slice(3);
+    return d.slice(0, 3) + '-' + d.slice(3, 7) + '-' + d.slice(7);
+  };
+
   // ① 글자를 칠 때마다 실행
   const handleChange = (e) => {
-    const { name, value } = e.target;
+    const { name } = e.target;
+    const value = name === 'phone' ? formatPhone(e.target.value) : e.target.value;
     setForm({ ...form, [name]: value });
 
     // 중복 확인한 칸을 다시 고치면 → 다시 확인해야 함
@@ -86,9 +100,16 @@ function JoinPage() {
     if (!checked.loginId || !checked.nickname || !checked.email) {
       return setError('아이디·닉네임·이메일 중복 확인을 해 주세요.');
     }
+    if (!/^01[0-9]{8,9}$/.test(form.phone.replace(/-/g, ''))) {
+      return setError('전화번호를 올바르게 입력해 주세요. (예: 010-1234-5678)');
+    }
+    if (!agreed) {
+      return setError('개인정보 수집·이용에 동의해 주세요.');
+    }
 
     try {
-      await client.post('/api/members', form); // 서버로 보내기
+      // 서버로 보내기 (동의 여부는 DB 값에 맞춰 Y / N 으로)
+      await client.post('/api/members', { ...form, privacyAgreed: agreed ? 'Y' : 'N' });
       alert('회원가입이 완료되었습니다.');
       navigate('/login'); // 로그인 화면으로 이동
     } catch (err) {
@@ -166,6 +187,36 @@ function JoinPage() {
               </div>
               <p className={hintClass(checked.email)}>{msg.email}</p>
             </div>
+          </div>
+
+          {/* 전화번호 */}
+          <div className={styles.row}>
+            <label className={styles.label}>전화번호</label>
+            <div className={styles.field}>
+              <input className={styles.input} type="tel" name="phone" value={form.phone}
+                onChange={handleChange} placeholder="010-1234-5678" />
+            </div>
+          </div>
+
+          {/* 개인정보 수집·이용 동의 (필수) */}
+          <div className={styles.agreeBox}>
+            <div className={styles.agreeRow}>
+              <label className={styles.agreeLabel}>
+                <input type="checkbox" checked={agreed} onChange={(e) => setAgreed(e.target.checked)} />
+                <span><b>[필수]</b> 개인정보 수집·이용에 동의합니다.</span>
+              </label>
+              <button type="button" className={styles.agreeToggle} onClick={() => setShowTerms(!showTerms)}>
+                {showTerms ? '닫기' : '내용 보기'}
+              </button>
+            </div>
+            {showTerms && (
+              <div className={styles.agreeText}>
+                <p><b>수집 항목</b> 아이디, 비밀번호, 닉네임, 이메일, 전화번호</p>
+                <p><b>이용 목적</b> 회원 식별, 로그인, 아이디·비밀번호 찾기, 서비스 이용 안내</p>
+                <p><b>보유 기간</b> 회원 탈퇴 시까지</p>
+                <p className={styles.agreeNote}>동의하지 않으면 회원가입을 할 수 없어요. 비회원으로는 계속 이용할 수 있어요.</p>
+              </div>
+            )}
           </div>
         </div>
 
