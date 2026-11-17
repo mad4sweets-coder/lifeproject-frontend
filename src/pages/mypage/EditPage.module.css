@@ -1,0 +1,71 @@
+/* 개인정보 수정·회원 탈퇴 (M05·M06) - 입력칸 모양만 (틀은 MyPage.module.css) */
+
+/* 한 줄: [이름표 140px] [입력칸 꽉 채우기] [버튼] */
+.row {
+  display: flex;
+  align-items: center;
+  gap: var(--sp-2);
+  margin-bottom: var(--sp-3);
+}
+
+.row label {
+  width: 140px;
+  flex-shrink: 0;
+  font-size: var(--fs-sm);
+  color: var(--ink-sub);
+}
+
+.input {
+  flex: 1;
+  height: 42px;
+  padding: 0 12px;
+  background: var(--bg-deep);
+  border: 1px solid var(--line-strong);
+  border-radius: var(--radius);
+  color: var(--ink);
+  font-family: var(--font-body);
+  font-size: var(--fs-sm);
+}
+
+.input:focus {
+  outline: none;
+  border-color: var(--primary);
+}
+
+/* 아이디 칸 (못 바꿈) */
+.input:disabled {
+  color: var(--ink-light);
+  background: var(--panel-2);
+}
+
+/* 중복 확인 결과 문구 */
+.hint {
+  margin: calc(var(--sp-2) * -1) 0 var(--sp-3) 148px;
+  font-size: var(--fs-xs);
+  color: var(--ink-sub);
+}
+
+.error,
+.ok {
+  margin-bottom: var(--sp-3);
+  padding: 10px 12px;
+  border-radius: var(--radius);
+  font-size: var(--fs-sm);
+}
+
+.error {
+  color: var(--red);
+  border: 1px solid var(--red);
+}
+
+.ok {
+  color: var(--green);
+  border: 1px solid var(--green);
+}
+
+/* 취소 · 저장하기 버튼 (오른쪽 정렬) */
+.actions {
+  display: flex;
+  justify-content: flex-end;
+  gap: var(--sp-2);
+}
