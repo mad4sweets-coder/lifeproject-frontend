@@ -1,8 +1,9 @@
 import { useEffect, useRef } from 'react';
 import * as THREE from 'three';
+import { ASIA, OTHER } from '../../common/ui/globeDots';
 
 // ───────────────────────────────────────────────
-// 카툰 지구 (three.js)
+// 밤하늘 점 지구 (three.js) - 메인 지구본과 같은 디자인 (동작은 민승 버전 그대로)
 //  - phase: 'flying' | 'approach' | 'drop' | 'landed' | 'error'
 //  - target: { lat, lng }  태어날 나라 위치 (approach 부터 사용)
 //  - onParked({ x, y, tx, ty }): 비행기가 멈췄을 때 화면 좌표
@@ -13,15 +14,17 @@ import * as THREE from 'three';
 const EARTH_RADIUS = 5;
 const ORBIT_RADIUS = 6.5;
 
-// 서비스 6개국 땅 조각 (실제 위치에 크게 놓음)
-const SERVICE_LANDS = [
-  { lat: 36.5, lng: 127.8, size: 0.75, color: 0xfb7185 }, // 대한민국
-  { lat: 40.0, lng: 127.0, size: 0.7, color: 0xf97316 }, // 북한
-  { lat: 36.2, lng: 138.3, size: 0.8, color: 0xf472b6 }, // 일본
-  { lat: 34.0, lng: 104.0, size: 1.6, color: 0xfacc15 }, // 중국
-  { lat: 16.0, lng: 107.5, size: 0.8, color: 0x34d399 }, // 베트남
-  { lat: 22.5, lng: 79.0, size: 1.3, color: 0xfb923c }, // 인도
-];
+// 디자인 색 (design.css 와 같은 값)
+const C = {
+  sea: 0x0c1338,
+  atmosphere: 0x5b7cff,
+  asia: 0xc9d2ff,
+  other: 0x343d72,
+  gold: 0xf2d58c,
+  ink: 0xe8e9f5,
+  sub: 0xa3a8cc,
+  edge: 0x1d2546,
+};
 
 // 위도·경도 → 지구 표면 좌표
 function latLngToVector(lat, lng, radius) {
@@ -34,24 +37,13 @@ function latLngToVector(lat, lng, radius) {
   );
 }
 
-// 매번 같은 모양이 나오도록 하는 랜덤 (씨앗값 고정)
-function seededRandom(seed) {
-  let t = seed;
-  return () => {
-    t += 0x6d2b79f5;
-    let r = Math.imul(t ^ (t >>> 15), 1 | t);
-    r ^= r + Math.imul(r ^ (r >>> 7), 61 | r);
-    return ((r ^ (r >>> 14)) >>> 0) / 4294967296;
-  };
-}
-
-// 카툰 느낌 물체: 본체 + 살짝 큰 검은 뒷면(= 외곽선)
+// 물체: 본체 + 살짝 큰 남색 뒷면(= 은은한 테두리)
 function createToonObject(geometry, color, outlineScale = 1.05) {
   const group = new THREE.Group();
-  group.add(new THREE.Mesh(geometry, new THREE.MeshToonMaterial({ color })));
+  group.add(new THREE.Mesh(geometry, new THREE.MeshPhongMaterial({ color, shininess: 30 })));
   const outline = new THREE.Mesh(
     geometry,
-    new THREE.MeshBasicMaterial({ color: 0x000000, side: THREE.BackSide }),
+    new THREE.MeshBasicMaterial({ color: C.edge, side: THREE.BackSide }),
   );
   if (typeof outlineScale === 'number') outline.scale.setScalar(outlineScale);
   else outline.scale.copy(outlineScale);
@@ -59,16 +51,32 @@ function createToonObject(geometry, color, outlineScale = 1.05) {
   return group;
 }
 
-// 땅 조각 하나 (노란 테두리 + 초록 가운데)
-function createLand(size, topColor) {
-  const land = new THREE.Group();
-  const baseGeom = new THREE.CylinderGeometry(size, size, 0.2, 7);
-  baseGeom.rotateX(Math.PI / 2);
-  land.add(createToonObject(baseGeom, 0xfacc15, new THREE.Vector3(1.05, 1.05, 1.2)));
-  const topGeom = new THREE.CylinderGeometry(size * 0.65, size * 0.65, 0.4, 7);
-  topGeom.rotateX(Math.PI / 2);
-  land.add(createToonObject(topGeom, topColor, new THREE.Vector3(1.05, 1.05, 1.2)));
-  return land;
+// 동그란 점 모양 (Points 가 네모로 안 보이게)
+function createDotTexture() {
+  const c = document.createElement('canvas');
+  c.width = 32;
+  c.height = 32;
+  const ctx = c.getContext('2d');
+  ctx.fillStyle = '#fff';
+  ctx.beginPath();
+  ctx.arc(16, 16, 14, 0, Math.PI * 2);
+  ctx.fill();
+  return new THREE.CanvasTexture(c);
+}
+
+// 땅 점 묶음 (경도,위도 배열 → 지구 표면 점들)
+function createLandDots(list, color, size, opacity, texture) {
+  const positions = [];
+  for (let i = 0; i < list.length; i += 2) {
+    const v = latLngToVector(list[i + 1], list[i], EARTH_RADIUS + 0.02);
+    positions.push(v.x, v.y, v.z);
+  }
+  const geom = new THREE.BufferGeometry();
+  geom.setAttribute('position', new THREE.Float32BufferAttribute(positions, 3));
+  const mat = new THREE.PointsMaterial({
+    color, size, map: texture, transparent: true, opacity, alphaTest: 0.3, sizeAttenuation: true,
+  });
+  return new THREE.Points(geom, mat);
 }
 
 // 지구 위 한 점(local)이 카메라 쪽(dir)을 보도록 돌리는 회전값
@@ -128,51 +136,43 @@ function ToonEarth({ phase, target, onParked }) {
     mount.appendChild(renderer.domElement);
 
     // ② 조명
-    scene.add(new THREE.AmbientLight(0xffffff, 0.6));
-    const sun = new THREE.DirectionalLight(0xffffff, 1.2);
+    scene.add(new THREE.AmbientLight(0xffffff, 0.55));
+    const sun = new THREE.DirectionalLight(0xcfd8ff, 1.0);
     sun.position.set(10, 20, 10);
     scene.add(sun);
 
-    // ③ 지구 + 땅 조각
+    // ③ 지구 (남색 바다 + 대기 빛) + 땅 점 (아시아는 밝게, 나머지는 흐리게)
     const earthGroup = new THREE.Group();
     scene.add(earthGroup);
-    earthGroup.add(
-      createToonObject(new THREE.SphereGeometry(EARTH_RADIUS, 48, 48), 0x2563eb, 1.03),
+    earthGroup.add(new THREE.Mesh(
+      new THREE.SphereGeometry(EARTH_RADIUS, 64, 64),
+      new THREE.MeshPhongMaterial({ color: C.sea, shininess: 8 }),
+    ));
+    const glow = new THREE.Mesh(
+      new THREE.SphereGeometry(EARTH_RADIUS * 1.05, 48, 48),
+      new THREE.MeshBasicMaterial({ color: C.atmosphere, transparent: true, opacity: 0.07, side: THREE.BackSide }),
     );
+    scene.add(glow);
 
-    const rand = seededRandom(7);
-    for (let i = 0; i < 40; i++) {
-      const size = rand() * 1.4 + 0.4;
-      const land = createLand(size, rand() > 0.5 ? 0x22c55e : 0x4ade80);
-      let lat = rand() * 160 - 80;
-      let lng = rand() * 360 - 180;
-      // 아시아 서비스 지역에는 랜덤 땅을 두지 않음 (진짜 나라 조각과 겹치지 않게)
-      if (lat > 5 && lat < 50 && lng > 70 && lng < 145) lng -= 120;
-      placeOnSphere(land, lat, lng, EARTH_RADIUS);
-      land.rotateZ(rand() * Math.PI * 2);
-      earthGroup.add(land);
-    }
-    SERVICE_LANDS.forEach((s) => {
-      const land = createLand(s.size, s.color);
-      placeOnSphere(land, s.lat, s.lng, EARTH_RADIUS + 0.05);
-      earthGroup.add(land);
-    });
+    const dotTexture = createDotTexture();
+    earthGroup.add(createLandDots(OTHER, C.other, 0.12, 0.9, dotTexture));
+    earthGroup.add(createLandDots(ASIA, C.asia, 0.14, 1, dotTexture));
 
-    // ④ 비행기 + 연기 꼬리
+    // ④ 비행기 + 별빛 꼬리
     const pivot = new THREE.Group();
     pivot.rotation.z = Math.PI / 6;
     pivot.rotation.x = -Math.PI / 8;
     scene.add(pivot);
 
     const airplane = new THREE.Group();
-    airplane.add(createToonObject(new THREE.BoxGeometry(1.2, 0.6, 0.6), 0xef4444, new THREE.Vector3(1.05, 1.1, 1.1)));
-    const wings = createToonObject(new THREE.BoxGeometry(0.5, 0.1, 2.4), 0x3b82f6, new THREE.Vector3(1.1, 1.6, 1.05));
+    airplane.add(createToonObject(new THREE.BoxGeometry(1.2, 0.6, 0.6), C.ink, new THREE.Vector3(1.05, 1.1, 1.1)));
+    const wings = createToonObject(new THREE.BoxGeometry(0.5, 0.1, 2.4), C.gold, new THREE.Vector3(1.1, 1.6, 1.05));
     wings.position.set(0.1, 0.1, 0);
     airplane.add(wings);
-    const tail = createToonObject(new THREE.BoxGeometry(0.3, 0.5, 0.1), 0xfacc15, new THREE.Vector3(1.1, 1.1, 1.5));
+    const tail = createToonObject(new THREE.BoxGeometry(0.3, 0.5, 0.1), C.gold, new THREE.Vector3(1.1, 1.1, 1.5));
     tail.position.set(-0.45, 0.4, 0);
     airplane.add(tail);
-    const propeller = createToonObject(new THREE.BoxGeometry(0.1, 0.8, 0.1), 0xffffff, new THREE.Vector3(1.5, 1.1, 1.5));
+    const propeller = createToonObject(new THREE.BoxGeometry(0.1, 0.8, 0.1), C.sub, new THREE.Vector3(1.5, 1.1, 1.5));
     propeller.position.set(0.65, 0, 0);
     airplane.add(propeller);
 
@@ -183,7 +183,10 @@ function ToonEarth({ phase, target, onParked }) {
 
     const trail = [];
     for (let i = 0; i < 12; i++) {
-      const dot = createToonObject(new THREE.SphereGeometry(0.15 * (1 - i / 12), 8, 8), 0xffffff, 1.3);
+      const dot = new THREE.Mesh(
+        new THREE.SphereGeometry(0.13 * (1 - i / 12), 8, 8),
+        new THREE.MeshBasicMaterial({ color: C.gold, transparent: true, opacity: 0.9 - i * 0.07 }),
+      );
       const a = (i + 1) * 0.12;
       dot.position.set(ORBIT_RADIUS * Math.cos(a), 0, ORBIT_RADIUS * Math.sin(a));
       pivot.add(dot);
@@ -192,9 +195,9 @@ function ToonEarth({ phase, target, onParked }) {
 
     // ⑤ 착륙 표시 (핀 + 퍼지는 원) - 처음엔 숨김
     const marker = new THREE.Group();
-    const pinHead = createToonObject(new THREE.SphereGeometry(0.35, 16, 16), 0xef4444, 1.15);
+    const pinHead = createToonObject(new THREE.SphereGeometry(0.35, 16, 16), C.gold, 1.15);
     pinHead.position.z = -1.0; // lookAt(0,0,0) 기준: -z 가 바깥쪽
-    const pinStick = createToonObject(new THREE.CylinderGeometry(0.06, 0.06, 0.9, 8), 0xffffff, 1.4);
+    const pinStick = createToonObject(new THREE.CylinderGeometry(0.06, 0.06, 0.9, 8), C.ink, 1.4);
     pinStick.rotation.x = Math.PI / 2;
     pinStick.position.z = -0.5;
     marker.add(pinHead, pinStick);
@@ -202,8 +205,8 @@ function ToonEarth({ phase, target, onParked }) {
     earthGroup.add(marker);
 
     const ring = new THREE.Mesh(
-      new THREE.RingGeometry(0.6, 0.8, 32),
-      new THREE.MeshBasicMaterial({ color: 0xfde047, transparent: true, side: THREE.DoubleSide }),
+      new THREE.RingGeometry(0.62, 0.7, 48),
+      new THREE.MeshBasicMaterial({ color: C.gold, transparent: true, side: THREE.DoubleSide }),
     );
     ring.visible = false;
     earthGroup.add(ring);
@@ -289,7 +292,7 @@ function ToonEarth({ phase, target, onParked }) {
             airplane.position.x = parkPos.x + leave * leave * 6;
           }
 
-          // 착륙: 핀이 쏙 솟고 노란 원이 퍼짐
+          // 착륙: 핀이 쏙 솟고 금색 원이 퍼짐
           if (phaseNow === 'landed') {
             if (!markerPlaced) {
               const { lat, lng } = targetRef.current;
@@ -328,6 +331,7 @@ function ToonEarth({ phase, target, onParked }) {
       cancelAnimationFrame(frameId);
       window.removeEventListener('resize', onResize);
       renderer.dispose();
+      dotTexture.dispose();
       mount.removeChild(renderer.domElement);
     };
   }, []);

@@ -1,0 +1,160 @@
+/* =========================================================
+   환승인생 디자인 규칙 (공통) - 밤하늘 스타일 (M01 시안)
+   모든 화면은 아래 변수(var(--이름))만 써서 색·글꼴·간격을 맞춰요.
+   - 바탕은 짙은 남색 밤하늘, 강조는 금색 별빛 하나만 씁니다.
+   - 변수 이름은 예전(도트 스타일)과 같아서, 이미 붙인 화면도 그대로 새 색으로 바뀝니다.
+   ========================================================= */
+
+/* 글꼴(고운바탕 + IBM Plex Sans KR)은 src/index.css 맨 위에서 불러와요 */
+
+:root {
+  /* ---------- 색: 바탕 ---------- */
+  --bg: #0a0f22;          /* 화면 바탕 (밤하늘) */
+  --bg-deep: #070b1a;     /* 더 어두운 바탕 (입력칸, 구역 나눌 때) */
+  --panel: #0f1530;       /* 카드·창 안쪽 */
+  --panel-2: #141b3a;     /* 카드 안의 칸, 마우스 올렸을 때 */
+  --line: #1d2546;        /* 기본 테두리 */
+  --line-strong: #2b3459; /* 버튼·입력칸 테두리 */
+
+  /* ---------- 색: 글자 ---------- */
+  --ink: #e8e9f5;         /* 기본 글자 */
+  --ink-sub: #a3a8cc;     /* 보조 글자 (설명, 날짜) */
+  --ink-light: #7d83ab;   /* 아주 흐린 글자 (안내 문구) */
+
+  /* ---------- 색: 강조 (금색 별빛) ---------- */
+  --primary: #f2d58c;       /* 메인 색 - 주요 버튼, 선택됨, 출생 별 */
+  --primary-dark: #d9b25f;  /* 눌렀을 때 */
+  --primary-light: rgba(242, 213, 140, 0.14); /* 선택된 칸 바탕 */
+  --on-primary: #1a1a33;    /* 금색 위 글자 */
+
+  --green: #6fd3a8;       /* 성공·긍정 */
+  --blue: #7aa8ff;        /* 정보 */
+  --red: #ff7a7a;         /* 위험·삭제 */
+  --yellow: #f2d58c;      /* 강조 (= primary) */
+  --death: #8a93c8;       /* 떠난 사람 표시 (빈 원) */
+
+  /* 능력치 색 (C05) */
+  --stat-health: #ff8a80;     /* 건강 */
+  --stat-happiness: #f2d58c;  /* 행복 */
+  --stat-knowledge: #7aa8ff;  /* 지식 */
+  --stat-relation: #6fd3a8;   /* 관계 */
+
+  /* ---------- 글꼴 ---------- */
+  --font-display: 'Gowun Batang', 'Nanum Myeongjo', serif;          /* 큰 제목·숫자 */
+  --font-body: 'IBM Plex Sans KR', 'Malgun Gothic', sans-serif;     /* 본문·버튼 */
+  --font-pixel: var(--font-display); /* 예전 이름 (도트 글꼴 자리) - 새 코드는 --font-display */
+
+  --fs-xs: 12px;
+  --fs-sm: 14px;
+  --fs-md: 16px;   /* 기본 */
+  --fs-lg: 20px;
+  --fs-xl: 28px;
+  --fs-xxl: 44px;  /* 화면 큰 제목 */
+  --fs-hero: 68px; /* 메인 로고 제목 */
+
+  /* ---------- 간격 (8px 단위) ---------- */
+  --sp-1: 4px;
+  --sp-2: 8px;
+  --sp-3: 16px;
+  --sp-4: 24px;
+  --sp-5: 32px;
+  --sp-6: 48px;
+
+  /* ---------- 모서리·그림자·빛 ---------- */
+  --radius: 10px;        /* 버튼·칸 */
+  --radius-lg: 16px;     /* 카드 */
+  --radius-pill: 999px;  /* 알약 모양 */
+  --border: 1px solid var(--line);
+  --shadow: 0 12px 32px rgba(0, 0, 0, 0.35);
+  --shadow-sm: 0 4px 12px rgba(0, 0, 0, 0.25);
+  --glow: 0 0 22px rgba(242, 213, 140, 0.35); /* 금색 별빛 */
+  --ease: cubic-bezier(0.65, 0, 0.35, 1);
+}
+
+/* ---------- 기본 바탕 ---------- */
+* {
+  box-sizing: border-box;
+}
+body {
+  margin: 0;
+  background: var(--bg);
+  color: var(--ink);
+  font-family: var(--font-body);
+  font-size: var(--fs-md);
+  line-height: 1.6;
+  -webkit-font-smoothing: antialiased;
+}
+h1, h2, h3, h4 {
+  font-family: var(--font-display);
+  font-weight: 700;
+  margin: 0 0 var(--sp-3);
+  line-height: 1.25;
+  color: var(--ink);
+}
+h1 { font-size: var(--fs-xxl); letter-spacing: 1px; }
+h2 { font-size: var(--fs-xl); }
+h3 { font-size: var(--fs-lg); }
+a {
+  color: var(--ink-sub);
+  text-decoration: none;
+}
+a:hover { color: var(--ink); }
+:focus-visible {
+  outline: 2px solid var(--primary);
+  outline-offset: 2px;
+}
+::selection { background: var(--primary); color: var(--on-primary); }
+
+/* ---------- 자주 쓰는 클래스 ---------- */
+.display { font-family: var(--font-display); }   /* 제목 글꼴로 */
+.pixel { font-family: var(--font-display); }     /* 예전 이름 (= .display) */
+.sub { color: var(--ink-sub); }                  /* 보조 글자 */
+.gold { color: var(--primary); }                 /* 금색 강조 */
+.center { text-align: center; }
+.page {                                          /* 화면 기본 틀 (가운데, 최대 너비) */
+  max-width: 1200px;
+  margin: 0 auto;
+  padding: var(--sp-4);
+}
+.row { display: flex; gap: var(--sp-3); align-items: center; flex-wrap: wrap; }
+.col { display: flex; flex-direction: column; gap: var(--sp-3); }
+
+/* 별이 뜬 바탕 (메인처럼 넓은 화면에 className="sky") */
+.sky {
+  background-color: var(--bg);
+  background-image:
+    radial-gradient(1px 1px at 20px 30px, rgba(255, 255, 255, 0.7), transparent),
+    radial-gradient(1px 1px at 120px 80px, rgba(255, 255, 255, 0.5), transparent),
+    radial-gradient(1.5px 1.5px at 210px 160px, rgba(255, 255, 255, 0.8), transparent),
+    radial-gradient(1px 1px at 300px 40px, rgba(255, 255, 255, 0.4), transparent),
+    radial-gradient(1px 1px at 60px 220px, rgba(255, 255, 255, 0.5), transparent),
+    radial-gradient(1px 1px at 260px 260px, rgba(255, 255, 255, 0.35), transparent);
+  background-size: 340px 300px;
+}
+
+/* 입력칸 */
+.input {
+  font-family: var(--font-body);
+  font-size: var(--fs-md);
+  height: 44px;
+  padding: 0 var(--sp-3);
+  border: 1px solid var(--line-strong);
+  border-radius: var(--radius);
+  background: var(--bg-deep);
+  color: var(--ink);
+  outline: none;
+}
+.input::placeholder { color: var(--ink-light); }
+.input:focus {
+  border-color: var(--primary);
+  box-shadow: 0 0 0 3px var(--primary-light);
+}
+
+/* 움직임 줄이기 설정을 켠 사용자 */
+@media (prefers-reduced-motion: reduce) {
+  *, *::before, *::after {
+    animation-duration: 0.01ms !important;
+    animation-iteration-count: 1 !important;
+    transition-duration: 0.01ms !important;
+  }
+}

@@ -1,107 +1,120 @@
+/* 로그인 화면 - 밤하늘 디자인 (design.css 변수 사용) */
+
 /* 화면 가운데 정렬 */
 .container {
   display: flex;
   justify-content: center;
-  padding: 30px 16px;
+  padding: var(--sp-6) var(--sp-3);
 }
 
 /* 가운데 상자 */
 .card {
-  width: 320px;
-  background: #fff;
-  border: 1px solid #ccc;
-  border-radius: 10px;
+  width: 380px;
+  background: var(--panel);
+  border: 1px solid var(--line-strong);
+  border-radius: var(--radius-lg);
+  box-shadow: var(--shadow);
   overflow: hidden;
 }
 
 .cardTitle {
-  background: #555;
-  color: #fff;
+  padding: var(--sp-4) var(--sp-4) 0;
+  font-family: var(--font-display);
+  font-size: var(--fs-xl);
   font-weight: 700;
-  font-size: 14px;
-  padding: 10px 16px;
+  color: var(--ink);
 }
 
 .cardBody {
-  padding: 16px;
+  padding: var(--sp-3) var(--sp-4) var(--sp-4);
 }
 
 /* 위에 이름, 아래 입력 */
 .label {
   display: block;
-  font-size: 12px;
-  margin: 10px 0 4px;
+  font-size: var(--fs-xs);
+  color: var(--ink-sub);
+  margin: var(--sp-3) 0 6px;
 }
 
 .input {
   width: 100%;
-  padding: 9px 10px;
-  font-size: 14px;
-  border: 1px solid #bbb;
-  border-radius: 6px;
+  height: 44px;
+  padding: 0 var(--sp-3);
+  font-family: var(--font-body);
+  font-size: var(--fs-sm);
+  color: var(--ink);
+  background: var(--bg-deep);
+  border: 1px solid var(--line-strong);
+  border-radius: var(--radius);
 }
 
 .input:focus {
   outline: none;
-  border-color: #222;
+  border-color: var(--primary);
+  box-shadow: 0 0 0 3px var(--primary-light);
 }
 
 /* 버튼 (가로 꽉 차게) */
 .btn {
   width: 100%;
-  margin-top: 8px;
-  padding: 12px;
-  font-size: 13px;
-  background: #fff;
-  border: 1px solid #bbb;
-  border-radius: 6px;
+  height: 46px;
+  margin-top: var(--sp-2);
+  font-family: var(--font-body);
+  font-size: var(--fs-sm);
+  color: var(--ink);
+  background: transparent;
+  border: 1px solid var(--line-strong);
+  border-radius: var(--radius);
   cursor: pointer;
 }
 
 .btn:hover {
-  background: #f5f5f5;
+  background: var(--panel-2);
 }
 
 .btnDark {
   width: 100%;
-  margin-top: 12px;
-  padding: 12px;
-  font-size: 14px;
-  font-weight: 700;
-  background: #222;
-  color: #fff;
-  border: 1px solid #222;
-  border-radius: 6px;
+  height: 50px;
+  margin-top: var(--sp-4);
+  font-family: var(--font-body);
+  font-size: var(--fs-md);
+  font-weight: 600;
+  color: var(--on-primary);
+  background: var(--primary);
+  border: 1px solid var(--primary);
+  border-radius: var(--radius);
   cursor: pointer;
 }
 
 .btnDark:hover {
-  background: #000;
+  box-shadow: var(--glow);
 }
 
-/* 오류 문구 회색 상자 */
+/* 오류 문구 */
 .errorBox {
-  margin-top: 12px;
-  padding: 9px;
-  font-size: 12px;
-  color: #c0392b;
-  background: #f3f3f3;
-  border-radius: 6px;
+  margin-top: var(--sp-3);
+  padding: 10px 12px;
+  font-size: var(--fs-xs);
+  color: var(--red);
+  background: rgba(255, 122, 122, 0.08);
+  border: 1px solid rgba(255, 122, 122, 0.3);
+  border-radius: var(--radius);
 }
 
 /* 아이디·비밀번호 찾기 | 회원가입 */
 .links {
   display: flex;
   justify-content: center;
-  gap: 8px;
-  margin: 10px 0 4px;
-  font-size: 12px;
-  color: #666;
+  gap: var(--sp-2);
+  margin: var(--sp-3) 0 var(--sp-1);
+  font-size: var(--fs-xs);
+  color: var(--ink-light);
 }
 
 .hint {
   text-align: center;
-  font-size: 12px;
-  color: #888;
-  margin: 6px 0 0;
+  font-size: var(--fs-xs);
+  color: var(--ink-light);
+  margin: var(--sp-2) 0 0;
 }
