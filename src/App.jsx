@@ -7,9 +7,13 @@ import BirthPage from './pages/birth/BirthPage';
 import DesignGuide from './common/DesignGuide';
 import VillageTest from './engine/village/VillageTest';
 import ResultPage from './pages/result/ResultPage';
+import MyPageLayout from './pages/mypage/MyPageLayout';
 import MyPage from './pages/mypage/MyPage';
 import EditPage from './pages/mypage/EditPage';
+import LivesPage from './pages/mypage/LivesPage';
+import TraitsPage from './pages/mypage/TraitsPage';
 import FindPage from './pages/find/FindPage';
+import QuestPage from './pages/quest/QuestPage';
 import AdminMain from './pages/admin/AdminMain';
 
 function App() {
@@ -22,9 +26,17 @@ function App() {
         <Route path="/" element={<Main />} />
         <Route path="/login" element={<LoginPage />} />
         <Route path="/join" element={<JoinPage />} />
-        <Route path="/mypage" element={<MyPage />} />
-        <Route path="/mypage/edit" element={<EditPage />} />
         <Route path="/find" element={<FindPage />} />
+
+        <Route path="/mypage" element={<MyPageLayout />}>
+          <Route index element={<MyPage />} />             {/* /mypage        M04 */}
+          <Route path="edit" element={<EditPage />} />     {/* /mypage/edit   M05·M06 */}
+          <Route path="lives" element={<LivesPage />} />   {/* /mypage/lives  M07 */}
+          <Route path="traits" element={<TraitsPage />} /> {/* /mypage/traits M08 */}
+        </Route>
+        
+        {/* C01 퀘스트 설정 (회원이 태어나기 전) */}
+        <Route path="/quest" element={<QuestPage />} />
         {/* C02 출생 추첨 */}
         <Route path="/birth" element={<BirthPage />} />
         {/* C18 인생 결과 */}

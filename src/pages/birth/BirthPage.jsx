@@ -40,6 +40,7 @@ function BirthPage() {
   const navigate = useNavigate();
   const location = useLocation();
   const decade = location.state?.decade; // 메인에서 고른 시대
+  const questIds = location.state?.questIds; // 퀘스트 화면(C01)에서 고른 퀘스트 (회원만)
 
   const startedRef = useRef(false); // 개발 모드에서 두 번 요청되는 것 막기
   const [phase, setPhase] = useState('flying'); // flying → approach → drop → landed
@@ -83,6 +84,12 @@ function BirthPage() {
         // 비회원이면 새 임시 토큰 저장 (이어하기에 사용)
         if (!isLogin && born.guestToken) {
           localStorage.setItem('guestToken', born.guestToken);
+        }
+
+        // 회원이 퀘스트를 골랐으면 이 인생에 저장 (C01) - 실패해도 연출은 계속
+        if (isLogin && questIds?.length) {
+          client.post('/api/quests/life', { lifeId: born.lifeId, questIds })
+            .catch((e) => console.log('퀘스트 저장 실패', e.response?.data));
         }
 
         // 지구를 그 나라로 돌리기

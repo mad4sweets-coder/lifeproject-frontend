@@ -1,9 +1,8 @@
-import { useEffect, useState } from 'react';
-import { useNavigate } from 'react-router-dom';
+import { useState } from 'react';
+import { useNavigate, useOutletContext } from 'react-router-dom';
 import client from '../../api/api';
 import Button from '../../common/ui/Button';
 import Modal from '../../common/ui/Modal';
-import MyPageSide from './MyPageSide';
 import { formatPhone } from '../../utils/phone';
 import common from './MyPage.module.css'; // 마이페이지와 같은 틀 (container, card, title …)
 import styles from './EditPage.module.css'; // 이 화면만 쓰는 입력칸 모양
@@ -13,12 +12,13 @@ import styles from './EditPage.module.css'; // 이 화면만 쓰는 입력칸 �
 function EditPage() {
   const navigate = useNavigate();
 
-  const [my, setMy] = useState(null); // 처음 불러온 내 정보 (원래 닉네임·이메일 비교용)
+  // 내 정보는 MyPageLayout 이 넘겨 줌 (setMy 로 바꾸면 왼쪽 메뉴 닉네임도 같이 바뀜)
+  const { my, setMy } = useOutletContext();
 
-  // 입력칸 값
-  const [nickname, setNickname] = useState('');
-  const [email, setEmail] = useState('');
-  const [phone, setPhone] = useState(''); // 010-1234-5678 모양으로 보여 줌
+  // 입력칸 값 (처음엔 내 정보로 채워 둠)
+  const [nickname, setNickname] = useState(my.nickname);
+  const [email, setEmail] = useState(my.email);
+  const [phone, setPhone] = useState(formatPhone(my.phone)); // 010-1234-5678 모양 (예전 회원은 빈칸)
   const [currentPassword, setCurrentPassword] = useState('');
   const [newPassword, setNewPassword] = useState('');
   const [newPasswordCheck, setNewPasswordCheck] = useState('');
@@ -37,27 +37,6 @@ function EditPage() {
   const [withdrawPw, setWithdrawPw] = useState('');
   const [withdrawError, setWithdrawError] = useState('');
   const [confirmOpen, setConfirmOpen] = useState(false); // 탈퇴 확인 창
-
-  // 1. 화면이 열리면 내 정보 불러와서 입력칸에 채우기
-  useEffect(() => {
-    if (!localStorage.getItem('token')) {
-      navigate('/login');
-      return;
-    }
-    client.get('/api/members/me')
-      .then((res) => {
-        setMy(res.data);
-        setNickname(res.data.nickname);
-        setEmail(res.data.email);
-        setPhone(formatPhone(res.data.phone)); // 예전 가입 회원은 비어 있음
-      })
-      .catch((err) => {
-        if (err.response?.status === 401) {
-          localStorage.removeItem('token');
-          navigate('/login');
-        }
-      });
-  }, [navigate]);
 
   // 2. 닉네임 중복 확인 (원래 닉네임 그대로면 확인 필요 없음)
   const checkNickname = async () => {
@@ -135,14 +114,9 @@ function EditPage() {
     }
   };
 
-  if (!my) {
-    return <div className={common.loading}>불러오는 중…</div>;
-  }
-
   return (
-    <div className={common.container}>
-      <MyPageSide active="edit" nickname={my.nickname} loginId={my.loginId} />
-
+    // 오른쪽 내용만 (왼쪽 메뉴는 MyPageLayout) + 탈퇴 확인 창
+    <>
       <main className={common.main}>
         <h1 className={common.title}>개인정보 수정</h1>
         <p className={common.lead}>저장하려면 현재 비밀번호를 꼭 입력해 주세요. 아이디는 바꿀 수 없어요.</p>
@@ -239,7 +213,7 @@ function EditPage() {
           <Button type="danger" onClick={withdraw}>탈퇴하기</Button>
         </div>
       </Modal>
-    </div>
+    </>
   );
 }
 

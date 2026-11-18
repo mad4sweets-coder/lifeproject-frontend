@@ -1,8 +1,8 @@
 import { useNavigate } from 'react-router-dom';
-import Button from '../../common/ui/Button';
 import styles from './MyPage.module.css';
 
 // 마이페이지 왼쪽 메뉴 (마이페이지 · 개인정보 수정 · 전생 기록 · 특성 강화 화면이 같이 씀)
+// ※ 로그아웃은 위쪽 공통 헤더(common/ui/Header.jsx)의 [로그아웃] 버튼 하나만 씀
 // 예: <MyPageSide active="edit" nickname="민승" loginId="msj01" />
 // active: 지금 보고 있는 메뉴 → 'home' / 'edit' / 'lives' / 'traits'
 const MENUS = [
@@ -14,14 +14,6 @@ const MENUS = [
 
 function MyPageSide({ active, nickname, loginId }) {
   const navigate = useNavigate();
-
-  // 로그아웃 (M03): 로그인 토큰만 지우고 비회원 guestToken 은 그대로 둠
-  const logout = () => {
-    localStorage.removeItem('token');
-    localStorage.removeItem('nickname');
-    localStorage.removeItem('memberRole');
-    navigate('/');
-  };
 
   return (
     <aside className={styles.side}>
@@ -43,8 +35,6 @@ function MyPageSide({ active, nickname, loginId }) {
           {m.label} <span>›</span>
         </button>
       ))}
-
-      <Button size="sm" onClick={logout}>로그아웃</Button>
     </aside>
   );
 }
