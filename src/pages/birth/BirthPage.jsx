@@ -48,6 +48,9 @@ function BirthPage() {
   const [target, setTarget] = useState(null); // 착륙할 위도·경도
   const [jump, setJump] = useState(null); // 아기 출발·도착 화면 좌표
   const [error, setError] = useState('');
+  const [questError, setQuestError] = useState(''); // 퀘스트 저장 실패 안내 (C01)
+  const [questRetry, setQuestRetry] = useState(false); // [다시 저장] 버튼 보일지 (401 이면 안 보임)
+  const [questBusy, setQuestBusy] = useState(false); // 다시 저장 중 (연속 클릭 막기)
 
   // ① 시대를 안 고르고 주소로 바로 들어오면 메인으로
   useEffect(() => {
@@ -56,6 +59,35 @@ function BirthPage() {
 
   // ② 비행기가 멈추면 ToonEarth 가 화면 좌표를 알려 줌
   const handleParked = useCallback((pos) => setJump(pos), []);
+
+  // ②-1 퀘스트 저장 (C01) - 태어난 직후 + [다시 저장] 버튼이 같이 씀
+  //   성공: 안내 문구 지움
+  //   401(로그인 만료): 다시 저장해도 안 되니까 로그인 안내만 (버튼 숨김)
+  //   그 밖의 실패: 안내 + [다시 저장] 버튼
+  const saveQuests = async (lifeId) => {
+    try {
+      await client.post('/api/quests/life', { lifeId, questIds });
+      setQuestError('');
+      setQuestRetry(false);
+    } catch (e) {
+      console.log('퀘스트 저장 실패', e.response?.data);
+      if (e.response?.status === 401) {
+        setQuestError('로그인이 만료되어 퀘스트를 저장하지 못했어요. 다시 로그인해 주세요.');
+        setQuestRetry(false);
+      } else {
+        setQuestError(e.response?.data?.message || '퀘스트를 저장하지 못했어요. 이번 생은 퀘스트 없이 진행돼요.');
+        setQuestRetry(true);
+      }
+    }
+  };
+
+  // ②-2 [다시 저장] 버튼
+  const retryQuests = async () => {
+    if (questBusy) return;
+    setQuestBusy(true);
+    await saveQuests(life.lifeId);
+    setQuestBusy(false);
+  };
 
   // ③ 서버에 출생 요청 → 연출 순서대로 진행
   useEffect(() => {
@@ -86,10 +118,10 @@ function BirthPage() {
           localStorage.setItem('guestToken', born.guestToken);
         }
 
-        // 회원이 퀘스트를 골랐으면 이 인생에 저장 (C01) - 실패해도 연출은 계속
+        // 회원이 퀘스트를 골랐으면 이 인생에 저장 (C01)
+        // await 안 함 → 저장을 기다리지 않고 연출은 계속 (실패하면 결과 카드에 안내)
         if (isLogin && questIds?.length) {
-          client.post('/api/quests/life', { lifeId: born.lifeId, questIds })
-            .catch((e) => console.log('퀘스트 저장 실패', e.response?.data));
+          saveQuests(born.lifeId);
         }
 
         // 지구를 그 나라로 돌리기
@@ -192,6 +224,22 @@ function BirthPage() {
               <strong>{life.gdpPerCapita ? `$${Math.round(life.gdpPerCapita).toLocaleString()}` : '-'}</strong>
             </li>
           </ul>
+
+          {/* 퀘스트 저장 실패 안내 (C01) */}
+          {questError && (
+            <div className={styles.questError}>
+              <p>{questError}</p>
+              {questRetry ? (
+                <button type="button" className={styles.ghostBtn} disabled={questBusy} onClick={retryQuests}>
+                  {questBusy ? '저장하는 중…' : '퀘스트 다시 저장'}
+                </button>
+              ) : (
+                <button type="button" className={styles.ghostBtn} onClick={() => navigate('/login')}>
+                  로그인하러 가기
+                </button>
+              )}
+            </div>
+          )}
 
           <div className={styles.actions}>
             <button type="button" className={styles.ghostBtn} onClick={() => navigate('/')}>
